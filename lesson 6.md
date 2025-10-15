@@ -232,7 +232,7 @@ func main() {
     
     // Подсчет голосов
     for _, candidate := range votes {
-        results[candidate]++
+        results[candidate] = results[candidate] + 1
     }
     
     // Находим победителя
