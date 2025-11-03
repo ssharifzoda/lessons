@@ -1,11 +1,10 @@
-A Sino Humo:
-Занятие 12: Тестирование в Go
+# Занятие 12: Тестирование в Go
 
 "Пишем надежный код с помощью unit-тестов"
 
 ---
 
-📝 План на сегодня
+## 📝 План на сегодня
 
 1. Зачем нужно тестирование? Философия тестирования в Go
 2. Пакет testing: Основы написания тестов
@@ -16,29 +15,30 @@ A Sino Humo:
 
 ---
 
-1. Зачем нужно тестирование?
+## 1. Зачем нужно тестирование?
 
 Тестирование - это проверка, что код работает правильно в различных сценариях.
 
 Преимущества тестирования:
 
-· Обнаружение багов на ранней стадии
-· Уверенность при рефакторинге
-· Документация поведения функций
-· Качество кода
+· Обнаружение багов на ранней стадии<br>
+· Уверенность при рефакторинге<br>
+· Документация поведения функций<br>
+· Качество кода<br>
 
 Философия Go:
 
-· Тесты рядом с кодом (файлы _test.go)
-· Минималистичный встроенный фреймворк
-· Простота написания тестов
+· Тесты рядом с кодом (файлы _test.go)<br>
+· Минималистичный встроенный фреймворк<br>
+· Простота написания тестов<br>
 
 ---
 
-2. Пакет testing - основы
+## 2. Пакет testing - основы
 
 Структура тестового файла:
 
+```go
 // calculator.go
 package calculator
 
@@ -49,6 +49,8 @@ func Add(a, b int) int {
 func Multiply(a, b int) int {
     return a * b
 }
+```
+
 ```go
 // calculator_test.go
 package calculator
@@ -74,26 +76,34 @@ func TestMultiply(t *testing.T) {
         t.Errorf("Multiply(4, 5) = %d; expected %d", result, expected)
     }
 }
+```
 
 Запуск тестов:
 
 bash
-# Запуск всех тестов в пакете
+
+### Запуск всех тестов в пакете
+```
 go test
+```
 
-# Запуск с подробным выводом
+### Запуск с подробным выводом
+```
 go test -v
+```
 
-# Запуск конкретного теста
+### Запуск конкретного теста
+```
 go test -v -run TestAdd
+```
 
 ---
 
-3. Table-driven tests
+## 3. Table-driven tests
 
 Table-driven tests - подход, когда тестовые данные выносятся в таблицу.
 
-go
+```go
 func TestAdd_TableDriven(t *testing.T) {
     tests := []struct {
         name     string
@@ -117,14 +127,13 @@ func TestAdd_TableDriven(t *testing.T) {
         })
     }
 }
-
+```
 ---
 
-4. Тестирование ошибок
+## 4. Тестирование ошибок
 
 Тестирование функций, возвращающих ошибки:
-
-go
+```go
 // math.go
 package math
 
@@ -138,9 +147,9 @@ func Divide(a, b float64) (float64, error) {
     }
     return a / b, nil
 }
+```
 
-
-go
+```go
 // math_test.go
 package math
 
@@ -182,33 +191,35 @@ func TestDivide(t *testing.T) {
         })
     }
 }
-
+```
 ---
 
-5. Покрытие кода (Coverage)
+## 5. Покрытие кода (Coverage)
 
 Анализ покрытия тестами:
 
-bash
-# Запуск тестов с анализом покрытия
-go test -cover
+### Запуск тестов с анализом покрытия
+```go test -cover```
 
-# Создание детального отчета покрытия
-go test -coverprofile=coverage.out
-go tool cover -html=coverage.out
-`
+### Создание детального отчета покрытия
+```go test -coverprofile=coverage.out```
+
+```go tool cover -html=coverage.out```
+
 
 Пример отчета покрытия:
 
-PASS
-coverage: 85.7% of statements
+PASS<br>
+coverage: 85.7% of statements<br>
 ok      calculator 0.002s
+
 ---
 
-🎯 Практика 1: Тестирование утилит для работы со строками
+## 🎯 Практика 1: Тестирование утилит для работы со строками
 
 Задача: Протестировать функции для работы со строками
 
+```go
 // string_utils.go
 package utils
 
@@ -237,6 +248,8 @@ func IsPalindrome(s string) bool {
     cleaned := strings.ToLower(strings.ReplaceAll(s, " ", ""))
     return cleaned == Reverse(cleaned)
 }
+```
+
 ```go
 // string_utils_test.go
 package utils
@@ -316,14 +329,14 @@ func TestIsPalindrome(t *testing.T) {
         })
     }
 }
-
+```
 ---
 
-🎯 Практика 2: Тестирование структур и методов
+## 🎯 Практика 2: Тестирование структур и методов
 
 Задача: Протестировать систему управления банковским счетом
 
-go
+```go
 // bank.go
 package bank
 
@@ -382,9 +395,9 @@ func (a *Account) Transfer(amount float64, to *Account) error {
     }
     return to.Deposit(amount)
 }
+```
 
-
-go
+```go
 // bank_test.go
 package bank
 
@@ -545,260 +558,4 @@ func TestAccount_Transfer(t *testing.T) {
         }
     })
 }
-
----
-
-🎯 Практика 3: Интеграционное тестирование
-
-Задача: Протестировать HTTP handler с помощью тестового сервера
-
-go
-// handler.go
-package api
-
-import (
-    "encoding/json"
-    "net/http"
-    "strconv"
-)
-
-type User struct {
-    ID    int    json:"id"
-    Name  string json:"name"
-    Email string json:"email"
-}
-
-type UserService struct {
-    users map[int]User
-    nextID int
-}
-
-func NewUserService() *UserService {
-    return &UserService{
-        users: make(map[int]User),
-        nextID: 1,
-    }
-}
-
-func (s *UserService) CreateUser(name, email string) User {
-    user := User{
-        ID:    s.nextID,
-        Name:  name,
-        Email: email,
-    }
-    s.users[s.nextID] = user
-    s.nextID++
-    return user
-}
-
-func (s *UserService) GetUser(id int) (User, bool) {
-    user, exists := s.users[id]
-    return user, exists
-}
-
-func (s *UserService) GetAllUsers() []User {
-    users := make([]User, 0, len(s.users))
-    for _, user := range s.users {
-        users = append(users, user)
-    }
-    return users
-}
-
-type Handler struct {
-    userService *UserService
-}
-
-func NewHandler() *Handler {
-    return &Handler{
-        userService: NewUserService(),
-    }
-}
-
-func (h *Handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
-
-    var request struct {
-        Name  string json:"name"
-        Email string json:"email"
-    }
-
-    if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-        http.Error(w, "Invalid JSON", http.StatusBadRequest)
-        return
-    }
-
-    if request.Name == "" || request.Email == "" {
-        http.Error(w, "Name and email are required", http.StatusBadRequest)
-        return
-    }
-
-    user := h.userService.CreateUser(request.Name, request.Email)
-    
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusCreated)
-    json.NewEncoder(w).Encode(user)
-}
-
-func (h *Handler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodGet {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
-
-    idStr := r.URL.Query().Get("id")
-    id, err := strconv.Atoi(idStr)
-    if err != nil {
-        http.Error(w, "Invalid user ID", http.StatusBadRequest)
-        return
-    }
-
-    user, exists := h.userService.GetUser(id)
-    if !exists {
-        http.Error(w, "User not found", http.StatusNotFound)
-        return
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(user)
-}
-
-
-go
-// handler_test.go
-package api
-
-import (
-    "bytes"
-    "encoding/json"
-    "net/http"
-    "net/http/httptest"
-    "testing"
-)
-
-func TestHandler_CreateUserHandler(t *testing.T) {
-    handler := NewHandler()
-    
-    tests := []struct {
-        name           string
-        requestBody    map[string]string
-        expectedStatus int
-        expectedUser   bool
-    }{
-        {
-            name: "valid user creation",
-            requestBody: map[string]string{
-                "name":  "Alice",
-                "email": "alice@example.com",
-            },
-            expectedStatus: http.StatusCreated,
-            expectedUser:   true,
-        },
-        {
-            name: "missing name",
-            requestBody: map[string]string{
-                "email": "alice@example.com",
-            },
-            expectedStatus: http.StatusBadRequest,
-            expectedUser:   false,
-        },
-        {
-            name: "missing email",
-            requestBody: map[string]string{
-                "name": "Alice",
-            },
-            expectedStatus: http.StatusBadRequest,
-            expectedUser:   false,
-        },
-        {
-            name:           "empty body",
-            requestBody:    map[string]string{},
-            expectedStatus: http.StatusBadRequest,
-            expectedUser:   false,
-        },
-    }
-    
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            body, _ := json.Marshal(tt.requestBody)
-            req := httptest.NewRequest("POST", "/users", bytes.NewReader(body))
-            req.Header.Set("Content-Type", "application/json")
-            
-            rr := httptest.NewRecorder()
-            handler.CreateUserHandler(rr, req)
-            
-            if rr.Code != tt.expectedStatus {
-                t.Errorf("expected status %d, got %d", tt.expectedStatus, rr.Code)
-            }
-            
-            if tt.expectedUser {
-                var user User
-                if err := json.Unmarshal(rr.Body.Bytes(), &user); err != nil {
-                    t.Errorf("failed to parse response: %v", err)
-                }
-                if user.Name != tt.requestBody["name"] {
-                    t.Errorf("expected user name %q, got %q", 
-                        tt.requestBody["name"], user.Name)
-                }
-            }
-        })
-    }
-}
-
-func TestHandler_GetUserHandler(t *testing.T) {
-    handler := NewHandler()
-    
-    // Сначала создаем пользователя для тестирования
-    handler.userService.CreateUser("Bob", "bob@example.com")
-    
-    tests := []struct {
-        name           string
-        userID         string
-        expectedStatus int
-        expectedUser   bool
-    }{
-        {
-            name:           "existing user",
-            userID:         "1",
-            expectedStatus: http.StatusOK,
-            expectedUser:   true,
-        },
-        {
-            name:           "non-existing user",
-            userID:         "999",
-            expectedStatus: http.StatusNotFound,
-            expectedUser:   false,
-        },
-        {
-            name:           "invalid user ID",
-            userID:         "abc",
-            expectedStatus: http.StatusBadRequest,
-            expectedUser:   false,
-        },
-        {
-            name:           "missing user ID",
-            userID:         "",
-            expectedStatus: http.StatusBadRequest,
-            expectedUser:   false,
-        },
-    }
-    
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            req := httptest.NewRequest("GET", "/user?id="+tt.userID, nil)
-            rr := httptest.NewRecorder()
-            
-            handler.GetUserHandler(rr, req)
-            
-            if rr.Code != tt.expectedStatus {
-                t.Errorf("expected status %d, got %d", tt.expectedStatus, rr.Code)
-            }
-            
-            if tt.expectedUser {
-                var user User
-                if err := json.Unmarshal(rr.Body.Bytes(), &user); err != nil {
-                    t.Errorf("failed to parse response: %v", err)
-                }
-                if us
+```
